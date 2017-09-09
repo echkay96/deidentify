@@ -1,0 +1,68 @@
+import csv,os
+f = open('input.txt')
+f1 =open('input_with_date.txt', 'w')
+
+date_today= input("Enter today's date according to format\n")
+
+print('Processing...')
+
+f1.write(date_today+"|")
+
+for line in f.readlines():
+    f1.write(line)
+    if '\n' in line:
+        f1.write(date_today+"|")
+f.close()
+f1.close()        
+
+
+fileHandle = open('input_with_date.txt', 'r')
+field ="FileDate TransactionID	DistributionFlag	DistributorName	HubPhysicianID	SP_PhysicianID	PhysicianSLN	PhysicianDEA	PhysicianNPI	PhysicianLastName	PhysicianFirstName	PhysicianSpecialtyCode	PhysicianAddress1	PhysicianAddress2	PhysicianCity	PhysicianState	PhysicianZipCode	PhysicianZip4	PhysicianPhone	HubPatientCaseID	SP_PatientCaseID	PatientLastName	PatientFirstName	PatientDOB	PatientGender	HubPrimaryPlanID	SP_PrimaryPlanID	PrimaryPlanPCN	PrimaryPlanName	PrimaryPlanAddress1	PrimaryPlanAddress2	PrimaryPlanCity	PrimaryPlanState	PrimaryPlanZipCode	PrimaryPlanZip4	PrimaryGroupNumber	PrimaryPlanNumber	PrimaryPlanPhone	HubSecondaryPlanID	SP_SecondaryPlanID	SecondaryPlanPCN	SecondaryPlanName	SecondaryPlanAddress1	SecondaryPlanAddress2	SecondaryPlanCity	SecondaryPlanState	SecondaryPlanZipCode	SecondaryPlanZip4	SecondaryPlanGroupNumber	ProgramAssistCardNumber	SecondaryPlanPhone	BIN	PBM_ID	SP_PBM_ID	PBM_BIN	PBMName	PBMAdress1	PBMAdress2	PBMCity	PBMState	PBMZipCode	PBMZip4	PBMGroupNumber	PBMPhone	CoInsurance	CoPayAmount	CoPayMitigation	Deductible	BenefitType	PARequired	PAAuthorizationCode	PAExpirationDate	CoverageDenied	ProductQuantity	ShipDate	NDCNumber	ProductName	DaysSupply	NewRefill	RefillsRemaining	PrescriptionNumber	CarrierName	ShipmentTracker	ShipToEntity	ShipToName	ShipToAddress1	ShipToAddress2	ShipToCity	ShipToState	ShipToZipCode	ShipToZip4	BillToName	BillToAddress1	BillToAddress2	BillToCity	BillToState	BillToZipCode	BillToZip4	PrimaryICD9	SecondaryICD9	PrimaryICD10	SecondaryICD10	CaseStatusID".split()
+raw_data= fileHandle.read()
+fileHandle.close()
+split_data=raw_data.split('|')
+count=0
+
+for line in split_data:
+    if '\n' in line:
+        count+=1
+
+rownum=count+1   
+
+d = open('processing.csv', 'w',newline='')
+wr = csv.writer(d,lineterminator='\r')
+wr.writerow(field)
+wr.writerow(split_data)
+fileHandle.close()
+d.close()
+
+fo=open('processing.csv')
+fread=csv.reader(fo)
+data=list(fread)
+data[rownum][0]=' '
+for i in range(1,rownum):
+	data[i][23]=' '
+	data[i][24]=' '
+	data[i][21]=' '
+	data[i][22]=' '
+	for j in range(84,97):
+		data[i][j]=' '
+
+for i in range(1,rownum):
+	k=open('Deid.csv','w',newline='')
+	writer=csv.writer(k)
+	writer.writerows(data)
+fo.close()
+k.close()
+
+os.remove("processing.csv")
+os.remove("input_with_date.txt")
+os.rename("Deid.csv","ACS_"+date_today+"_deid.csv")
+print('Done..')	
+
+
+
+
+
+
+
